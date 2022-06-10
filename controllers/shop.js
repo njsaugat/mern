@@ -1,5 +1,5 @@
 // // const adminData  = require('./admin')
-
+ 
 // // const Cart = require('../models/cart');
 const Product=require('../models/productData');
 const user = require('../models/user');
@@ -16,7 +16,8 @@ const getProducts=(req, res,next) => {
         res.render('shop/product-list',{
             products:products,
             docTitle:'Shop',
-            hasProducts:products.length>0
+            hasProducts:products.length>0,
+            isAuthenticated:req.isLoggedIn
             });
     })
     .catch(err=>console.log(err))}
@@ -28,6 +29,7 @@ const getProduct= (req,res,next)=>{
         res.render('shop/product-detail',{
             product,
             docTitle:'Product Details',
+            isAuthenticated:req.isLoggedIn
         })
     })
     .catch()
@@ -44,6 +46,7 @@ const getIndex=(req,res,next)=>{
             products:products,
             docTitle:'Shop',
             hasProducts:products.length>0,
+            isAuthenticated:req.isLoggedIn
             });
     })
     .catch(err=>console.log(err))
@@ -51,32 +54,7 @@ const getIndex=(req,res,next)=>{
 }
 
 
-    // let products=[];
-    // let index=0;
-    // if(req.user.cart.items.length===0){
-    //     res.render('shop/cart',{
-    //         docTitle:'Your Cart',
-    //         products:[]
-    //     })
-    // }
-    // req.user.cart.items.forEach(item=>{
-    //     Product.findById(item.productId)//make index auto
-    //     .then(product=>{
-    //         index++;
-    //         products.push({...product,quantity:item.quantity})
-    //         if(index===(req.user.cart.items.length)){
-    //             res.render('shop/cart',{
-    //                 docTitle:'Your Cart',
-    //                 products:products
-    //             })
-    //         }
-    //     })
-    //     .catch(err=>{
-    //         console.log(err)
-    //     })
-        
-
-    // })
+  
     
 
 const getCart=(req,res,next)=>{
@@ -85,7 +63,8 @@ const getCart=(req,res,next)=>{
     if(req.user.cart.items.length===0){
         res.render('shop/cart',{
             docTitle:'Your Cart',
-            products:[]
+            products:[],
+            isAuthenticated:req.isLoggedIn
         })
     }
     req.user.cart.items.forEach(item=>{
@@ -105,7 +84,8 @@ const getCart=(req,res,next)=>{
             if(index===(req.user.cart.items.length)){
                 res.render('shop/cart',{
                     docTitle:'Your Cart',
-                    products:products
+                    products:products,
+                    isAuthenticated:req.isLoggedIn
                 })
             }
         })
@@ -136,13 +116,6 @@ const postCart=(req,res,next)=>{
 }
 
 
-// // const renderCart=(req,res,next,products)=>{
-// //     res.render('shop/cart',{
-// //         docTitle:'Your Cart',
-// //         products:products
-// //     })
-// //     next();
-// // }
 
 
 
@@ -152,23 +125,16 @@ const postCartDelete=(req,res,next)=>{
             res.redirect('/')
         })
 }
-// const postCartDelete=(req,res,next)=>{
-//     const user=req.user;
-//     User.findOneAndDelete(
-//         {'user.cart.items.productId':req.params.id})
-//         .then(deleted=>{
-//             res.redirect('/')
-//         })
-// }
 const postOrder=(req,res,next)=>{
     req.user
     .populate('cart.items.productId')
     .then(user=>{
         console.log(user)
         const products=user.cart.items.map(item=>{
-            return { product:item.productId
-                ,quantity:{...item.quantity._doc}}
+            return { product:item.productId._doc
+                ,quantity:item._doc.quantity}
         });
+        console.log(products)
         const order=new Order({
             user:{
                 name:req.user.name,
@@ -184,87 +150,28 @@ const postOrder=(req,res,next)=>{
     .then(()=>{
         res.redirect('/')
     })
+    .catch(err=>{
+        console.log(err)
+    })
 }
 const getOrder=(req,res,next)=>{
-    Order.find({'user.userId':req.user._id}) 
+    Order.findOne({'user.userId':req.user._id}) 
     .then(orders=>{
-            console.log(orders)
-            const products=[{...orders.products._doc,quantity:orders.products.quantity}]
-            if(orders.items.length===0 ){
-                res.render('shop/orders',{
-                    docTitle:'Your Cart',
-                    products
-                })
-            }
+            // console.log(orders.products)
+            const products=orders.products.map(productObj=>{
+                return {...productObj.product,quantity:productObj.quantity}
+            })
+            res.render('shop/orders',{
+                docTitle:'Your Cart',
+                products,
+                isAuthenticated:req.isLoggedIn
+            })
         })
+    .catch(err=>{
+        console.log(err)
+    })
 }
-// const getOrder=(req,res,next)=>{
-//     let index=0
-//     let products=[] 
-//     req.user.getOrders(req.user._id)
-//         
-//             orders.items.forEach(item=>{
-//                 Product.findById(item.productId)//make index auto
-//                 .then(product=>{
-//                     index++;
-//                     products.push({...product,quantity:item.quantity})
-//                     if(index===(orders.items.length)){
-//                         res.render('shop/orders',{
-//                             docTitle:'Your Cart',
-//                             products:products
-//                         })
-//                     }
-//                 })
-//             })
-//         })
-// }
 
-
-
-// // const getOrder=(req,res,next)=>{
-// //     req.user.getOrders({include:['products']})
-// //     .then(orders=>{
-// //         res.render('shop/orders',{
-// //             orders,
-// //             docTitle:'Your Order'
-// //         })
-// //     })
-// //     .catch(err=>console.log(err))
-    
-// // }
-
-// // const postOrder=(req,res,next)=>{
-// //     let fetchedCart;
-// //     req.user
-// //         .getCart()
-// //         .then(cart=>{
-// //             fetchedCart=cart;
-// //             return cart.getProducts()
-// //         })
-// //         .then(products=>{
-// //             return req.user.createOrder();
-// //         })
-// //         .then(order=>{
-// //             order.addProducts(products.map(product=>{
-// //                 product.orderItem={quantity:product.cartItem.quantity }
-// //                 return product;
-// //             }))
-// //         })
-// //         .then(result=>{
-// //             return fetchedCart.setProducts(null);
-// //         })
-// //         .then(result=>{
-// //             res.redirect('/orders')
-
-// //         })
-        
-// //         .catch(err=>console.log(err))
-// // }
-// // const getCheckout=(req,res,next)=>{
-// //     res.render('shop/checkout',{
-// //         docTitle:'Chekout'
-// //     })
-// // }
 
 
 module.exports={
@@ -279,9 +186,7 @@ module.exports={
     postOrder
 }
 
-//other way of getting/posting cart
-
-
+//other way of getting cart
 //other way of getting cart
 // const postCart=(req,res,next)=>{
 //     // const user=User('sau','sau@mail.com',cart:{items:[{}]})
@@ -313,3 +218,31 @@ module.exports={
 //             console.log(err)
 //         })    
 // }
+
+//getting cart ig:
+  // let products=[];
+    // let index=0;
+    // if(req.user.cart.items.length===0){
+    //     res.render('shop/cart',{
+    //         docTitle:'Your Cart',
+    //         products:[]
+    //     })
+    // }
+    // req.user.cart.items.forEach(item=>{
+    //     Product.findById(item.productId)//make index auto
+    //     .then(product=>{
+    //         index++;
+    //         products.push({...product,quantity:item.quantity})
+    //         if(index===(req.user.cart.items.length)){
+    //             res.render('shop/cart',{
+    //                 docTitle:'Your Cart',
+    //                 products:products
+    //             })
+    //         }
+    //     })
+    //     .catch(err=>{
+    //         console.log(err)
+    //     })
+        
+
+    // })
