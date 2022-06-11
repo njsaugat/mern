@@ -1,11 +1,8 @@
 const Product=require('../models/productData')
 const getAddProduct=(req,res)=>{
-    // res.sendFile(path.join(rootDirectory,'/views/add-product.html'))without using templating engine
     res.render('admin/add-product',{
         docTitle:'Add Product',
-        formsCSS:true,
-        productCSS:true,
-        activeAddProduct:true
+        isAuthenticated:req.session.isLoggedIn
     })
 }
 
@@ -15,32 +12,30 @@ const postAddProduct=(req,res,next)=>{
     const imageUrl=req.body.imageUrl;
     const price=req.body.price;
     const description=req.body.description; 
-    const product=new Product(title,imageUrl,price, description)
-    product
-        .save()
+    const product=new Product({
+        title:title,
+        imageUrl:imageUrl,
+        price:price,
+        description:description,
+        userId:req.user._id
+    }) 
+    product.save()
         .then(result=>{
             console.log('product created')
             res.redirect('/admin/products')
         })
-    // req.user
-    //     .createProduct({//like yo chai tyo relation vako hunale+ tyo name ma Product chai Product vanne obj bata ako 
-    //         title,price,imageUrl,description
-    //         })
-    //     .then(result=>{
-    //         console.log('Product Created')
-    //         res.redirect('/') 
-    //     })    
-    //     .catch(err=>console.log(err))
-
 }
 
 const getProductsAdmin=(req,res,next)=>{
-    Product.fetchAll()
+    Product.find()
+    // .select('title price -_id  ')//selecting and populating certain fields
+    // .populate('userId','name')
     .then(products=>{
         res.render('admin/products-admin',{
             products,
             hasProducts:products.length>0,
-            docTitle:'Admin Products'
+            docTitle:'Admin Products',
+            isAuthenticated:req.session.isLoggedIn 
         })
     })
     .catch(err=>console.log(err))   
@@ -52,6 +47,7 @@ const editProduct=(req,res,next)=>{
         res.render('admin/edit-product',{
             finalProduct:product,
             docTitle:'Edit Products',
+            isAuthenticated:req.session.isLoggedIn
         }) 
     })
     .catch(err=>console.log(err))
@@ -66,39 +62,29 @@ const postProduct=(req,res,next)=>{
         imageUrl:req.body.imageUrl,
         price:req.body.price,
         description:req.body.description
-
     }
-    Product.update(editObject,req.params.id)
+    Product.updateOne({_id:req.params.id},{...editObject})
     .then(product=>{
         if(product){
-            return res.redirect('/');
+            return res.redirect('/admin/products');
         }
-    })
-    
-    // Product.findByPk(req.params.id)
-    // Product.update(editObject,
-    //     {where: {id:req.params.id}}
-    // )
-    // .then(()=>res.redirect('/'))
-    // .catch(err=>console.log(err))
-    
-    
+    })    
 }
 
-// const deleteProduct=(req,res,next)=>{
-//     Product.destroy({where:{id:req.params.id}})
-//     .then(()=>res.redirect('/'))
-//     .catch(err=>console.log(err))
+const deleteProduct=(req,res,next)=>{
+    Product.deleteOne({_id:req.params.id})
+    .then(()=>res.redirect('/'))
+    .catch(err=>console.log(err))
 
     
-// }
-//
+}
+// //
 module.exports={
     getAddProduct,
     postAddProduct,
     getProductsAdmin,
     editProduct,
     postProduct,
-    // deleteProduct
+    deleteProduct
 }
 
