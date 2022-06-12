@@ -17,7 +17,7 @@ const getProducts=(req, res,next) => {
             products:products,
             docTitle:'Shop',
             hasProducts:products.length>0,
-            isAuthenticated:req.isLoggedIn
+            // csrfToken:req.csrfToken()
             });
     })
     .catch(err=>console.log(err))}
@@ -28,8 +28,7 @@ const getProduct= (req,res,next)=>{
     .then((product)=>{//sequelize auto gives only one product
         res.render('shop/product-detail',{
             product,
-            docTitle:'Product Details',
-            isAuthenticated:req.isLoggedIn
+            docTitle:'Product Details'
         })
     })
     .catch()
@@ -45,8 +44,7 @@ const getIndex=(req,res,next)=>{
         res.render('shop/index',{
             products:products,
             docTitle:'Shop',
-            hasProducts:products.length>0,
-            isAuthenticated:req.isLoggedIn
+            hasProducts:products.length>0
             });
     })
     .catch(err=>console.log(err))
@@ -64,7 +62,6 @@ const getCart=(req,res,next)=>{
         res.render('shop/cart',{
             docTitle:'Your Cart',
             products:[],
-            isAuthenticated:req.isLoggedIn
         })
     }
     req.user.cart.items.forEach(item=>{
@@ -85,7 +82,6 @@ const getCart=(req,res,next)=>{
                 res.render('shop/cart',{
                     docTitle:'Your Cart',
                     products:products,
-                    isAuthenticated:req.isLoggedIn
                 })
             }
         })
@@ -137,7 +133,7 @@ const postOrder=(req,res,next)=>{
         console.log(products)
         const order=new Order({
             user:{
-                name:req.user.name,
+                email:req.user.email,
                 userId:req.user 
             },
             products 
@@ -157,6 +153,12 @@ const postOrder=(req,res,next)=>{
 const getOrder=(req,res,next)=>{
     Order.findOne({'user.userId':req.user._id}) 
     .then(orders=>{
+            if(!orders){
+                return res.render('shop/orders',{
+                    docTitle:'Your Cart',
+                    products:[]
+                })
+            }
             // console.log(orders.products)
             const products=orders.products.map(productObj=>{
                 return {...productObj.product,quantity:productObj.quantity}
@@ -164,7 +166,6 @@ const getOrder=(req,res,next)=>{
             res.render('shop/orders',{
                 docTitle:'Your Cart',
                 products,
-                isAuthenticated:req.isLoggedIn
             })
         })
     .catch(err=>{
