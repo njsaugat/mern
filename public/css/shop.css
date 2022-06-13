@@ -1,0 +1,131 @@
+body{
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+main{
+    padding: 1rem;
+}
+.main-header{
+    width: 98%;
+    height: 3.5rem;
+    background-color: #28bc32;
+    padding: 0 1.5rem;
+}
+.main-header__nav{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    width: 98%;
+    justify-content: space-between;
+}
+.main-header__nav>li{
+    list-style: none ;
+}
+.main-header__item-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    /* color:rgb(255, 255, 0); */
+}
+/* .main-header__item a{
+    color: hsl(43, 24, 346);
+} */
+
+.main-header__item a{
+    text-decoration: none;
+    color:whitesmoke;
+    margin: 0 1rem;
+    font-size: 1.2rem;
+}
+.main-header__item a:hover,
+.main-header__item a:active,
+.main-header__item a:active{
+    color: #8020e0;
+}
+.container{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.grid{
+    /* border:solid grey 1px; */
+    box-shadow: 10px 10px 20px 5px #e3d6d6;
+    width: 30vw;
+    cursor:pointer;
+}
+.card__actions{
+    text-align: center;
+    
+}
+
+button{
+    color:#8020e0 ;
+    background: white;
+    cursor: pointer;
+    height: 3.5vh;
+    border: 1px solid #8020e0;
+    font:inherit;
+    border-radius: 10px;
+}
+
+button:hover,
+button:active{
+    background-color: #5905ad;
+    color: white;
+}
+.card__header,.card__content,.card__image{
+    text-align: center;
+}
+.product__description{
+    padding:0px 10px;
+}
+.card__actions{
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px;
+    /* text-align: center; */
+}
+.card__actions a{
+    margin-right: 10px;
+}
+
+.card__image img{
+    width: 27vw;
+}
+
+.centered{
+    text-align: center;
+}
+
+form .btn{
+    text-align: center;
+}
+.cart{
+    
+    display: flex;
+    /* flex-direction: row; */
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    /* width: 100%;
+    text-align: center; */
+}
+.container1{
+    /* margin:10px; */
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+    margin:3vh 0vh;
+    box-shadow: 10px 10px 20px 5px #e3d6d6;
+    /* margin:0vh 20vh */
+}
+/* .order{
+    margin: 0px 20vw;
+} */
