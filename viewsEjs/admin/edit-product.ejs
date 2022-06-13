@@ -1,0 +1,41 @@
+<%- include('../includes/head.ejs') %> 
+<link rel="stylesheet" href="/public/css/addProduct.css">
+<% const data=finalProduct.description %> 
+</head>
+<body>
+<%- include('../includes/navigation.ejs') %> 
+<main>
+    <form class= "product-form" action="/admin/products/<%=finalProduct._id %>" method="POST">
+        <h1>Edit your product!</h1>
+        <div class="form-control">
+            <label for="title">Enter Text</label>
+            <input type="text" name="title" value="<%= finalProduct.title %> ">
+        </div>
+        <div class="form-control">
+            <label for="imageUrl">Enter Image Url</label>
+            <input type="text" name="imageUrl" value="<%= finalProduct.imageUrl %>" >
+        </div>
+        <div class="form-control">
+            <label for="price">Enter Price</label>
+            <input type="number" name="price" step="0.01" value="<%= finalProduct.price %>" >
+        </div>
+        <div class="form-control">
+            <label for="description">Enter Description</label>
+            <!-- <input type="text" name="description"> -->
+            <textarea name="description" id="description" class="description" rows="8" ><%= finalProduct.description %></textarea>
+        </div>
+        <div class="button">
+            
+            <input type="hidden" name="id" value="<%= finalProduct._id%>" >
+            <button type="submit">Edit Product</button>
+        </div>
+    </form>
+</main>
+<!-- <div class="button">
+    <form action="/admin/products/<%=finalProduct.id %> " method="POST">
+        <input type="hidden" name="id" value="<%= finalProduct.id%>" >
+        <button type="submit">Edit Product</button>
+    </form>
+</div> -->
+</body>
+</html>
