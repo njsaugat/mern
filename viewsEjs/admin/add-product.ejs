@@ -3,25 +3,30 @@
 </head>
 <body>
     <%- include('../includes/navigation.ejs') %> 
+    <div class="error-display" >
+        <% if(errorMessage) {%> 
+            <div class="user-message user-message--error"><%= errorMessage %> </div>
+            <% } %> 
+    </div>
     <main>
         <form class= "product-form" action="/admin/add-product" method="POST">
             <h1>Add your products!</h1>
             <div class="form-control">
                 <label for="title">Enter Text</label>
-                <input type="text" name="title">
+                <input type="text" name="title" value="<%= finalProduct.title?finalProduct.title:'' %>">
             </div>
             <div class="form-control">
                 <label for="imageUrl">Enter Image Url</label>
-                <input type="text" name="imageUrl">
+                <input type="text" name="imageUrl" value="<%= finalProduct.imageUrl?finalProduct.imageUrl:'' %>">
             </div>
             <div class="form-control">
                 <label for="price">Enter Price</label>
-                <input type="number" name="price" step="0.01">
+                <input type="number" name="price" step="0.01" value="<%= finalProduct.price?finalProduct.price:'' %>">
             </div>
             <div class="form-control">
                 <label for="description">Enter Description</label>
                 <!-- <input type="text" name="description"> -->
-                <textarea name="description" id="description" rows="8"></textarea>
+                <textarea name="description" id="description" rows="8"><%= finalProduct.description?finalProduct.description:'' %></textarea>
             </div>
             <div class="button">
                 <button type="submit">Submit</button>
