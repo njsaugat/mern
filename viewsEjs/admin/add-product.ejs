@@ -9,15 +9,16 @@
             <% } %> 
     </div>
     <main>
-        <form class= "product-form" action="/admin/add-product" method="POST">
+        <form class= "product-form" action="/admin/add-product" method="POST" enctype="multipart/form-data">
             <h1>Add your products!</h1>
             <div class="form-control">
                 <label for="title">Enter Text</label>
                 <input type="text" name="title" value="<%= finalProduct.title?finalProduct.title:'' %>">
             </div>
-            <div class="form-control">
-                <label for="imageUrl">Enter Image Url</label>
-                <input type="text" name="imageUrl" value="<%= finalProduct.imageUrl?finalProduct.imageUrl:'' %>">
+            
+             <div class="form-control" >
+                <label for="imageUrl"> Image </label>
+                <div style="text-align:center;"><input type="file" name="image"></div>
             </div>
             <div class="form-control">
                 <label for="price">Enter Price</label>
