@@ -4,16 +4,21 @@
 </head>
 <body>
 <%- include('../includes/navigation.ejs') %> 
+<!-- <div class="error-display" >
+    <% if(errorMessage) {%> 
+        <div class="user-message user-message--error"><%= errorMessage %> </div>
+        <% } %> 
+</div> -->
 <main>
-    <form class= "product-form" action="/admin/products/<%=finalProduct._id %>" method="POST">
+    <form class= "product-form" action="/admin/products/<%=finalProduct._id %>" method="POST" enctype="multipart/form-data">
         <h1>Edit your product!</h1>
         <div class="form-control">
             <label for="title">Enter Text</label>
             <input type="text" name="title" value="<%= finalProduct.title %> ">
         </div>
-        <div class="form-control">
-            <label for="imageUrl">Enter Image Url</label>
-            <input type="text" name="imageUrl" value="<%= finalProduct.imageUrl %>" >
+        <div class="form-control" >
+            <label for="imageUrl"> Image </label>
+            <div style="text-align:center;"><input type="file" name="image" value="<%= finalProduct.imageUrl %>"></div>
         </div>
         <div class="form-control">
             <label for="price">Enter Price</label>
@@ -25,9 +30,8 @@
             <textarea name="description" id="description" class="description" rows="8" ><%= finalProduct.description %></textarea>
         </div>
         <div class="button">
-            
             <input type="hidden" name="id" value="<%= finalProduct._id%>" >
-            <button type="submit">Edit Product</button>
+                <button type="submit">Edit Product</button>
         </div>
     </form>
 </main>
