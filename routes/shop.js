@@ -14,6 +14,7 @@ router.get('/products',shopController.getProducts);
 
 router.get('/products/:id', shopController.getProduct)//dynamic routes has to at lat
 
+router.get('/orders/:orderid')
 // // router.get('/products/delete')
 
 
