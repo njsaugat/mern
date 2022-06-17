@@ -9,6 +9,7 @@ const path=require('path');
 const { getErrors } = require('./controllers/errors');
 const User=require('./models/user')
 
+const multer=require('multer')
  
 const MongoDBStore=require('connect-mongodb-session')(session)//above line's session pass as arg here 
 
@@ -19,12 +20,30 @@ const sessionStore=new MongoDBStore({
 })
 
 
+const fileStorage=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,'images')
+    },
+    filename:(req,file,cb)=>{
+        cb(null,new Date().toISOString()+''+file.originalname  )
+    }
+})
+
+const fileFilter=(req,file, cb)=>{
+    if(file.mimetype==='image/png' || file.mimetype==='image/jpg' || file.mimetype==='image/jpeg'){
+        cb(null,true )
+    }else{
+        cb(null,true )
+    }
+}
+
 app.set('view engine','ejs');
 app.set('views','viewsEjs')//to set views to viewsEjs folder;but by default it's set to views; since we already has views set up; created viewsEjs
 
 const mongoose=require('mongoose');
 
 const bodyParser=require('body-parser')
+
 
 // const csrf=require('csurf')
 
@@ -33,7 +52,9 @@ const bodyParser=require('body-parser')
 // const csrfProtection=csrf()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(multer({storage:fileStorage, fileFilter:fileFilter}).single('image'))
 app.use(express.static(path.join(__dirname)))
+app.use(express.static(path.join(__dirname,'images')))
 
 app.use(cookieParser())
 app.use(session({
