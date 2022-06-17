@@ -2,7 +2,7 @@ body{
     padding: 0;
     margin: 0;
     font-family: sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 main{
     padding: 1rem;
@@ -89,4 +89,34 @@ button:active{
 }
 .button{
     text-align: center;
+}
+
+.error-display{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+.user-message{
+    margin:1rem 0px;
+    border-radius: 2rem;
+    padding: 0.5rem;
+    width: 50%;
+    box-shadow: 3px 3px 3px rgb(237, 233, 224);
+    /* height: 10%; */
+    border: 1px solid rgb(255, 216, 143);
+    background: rgb(255, 216, 143);;
+} 
+
+
+.centered{
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.email{
+    border: 1px solid red;
+}
+
+.form-control input.invalid{
+    border: 2px solid red;
 }
