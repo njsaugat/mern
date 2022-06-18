@@ -12,20 +12,19 @@
                 <% let num=1 %> 
                 <% products.forEach(product=>{%>
                     <li>
-                        <h1>#<%= num++ %> </h1>
+                        <h1>#<%= num++ %> -- <a href="/orders/<%= product.orderId  %> ">Invoice</a>   </h1>
                         <li><%= product.title %> </li>
                         <li>Quantity:<%= product.quantity %> 
                         </li>
 
                         
                     </li>
-                    
+                      
                 <%  }) %> 
             </ul>
             <div class="btn">
                 <button>Place Order</button>
             </div>
-            -- <a href="">Invoice</a>
         <% } %>  
     </main>
 </body>
