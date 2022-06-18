@@ -2,7 +2,7 @@ body{
     padding: 0;
     margin: 0;
     font-family: sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 main{
@@ -129,3 +129,22 @@ form .btn{
 /* .order{
     margin: 0px 20vw;
 } */
+
+.pagination{
+    text-align: center;
+    margin-top: 5rem;
+}
+
+.pagination a{
+    text-decoration: none;
+    color: #8020e0;
+    padding: 0.5rem ;
+    border: 1px solid #8020e0;
+    margin: 0 1rem;
+}
+
+.pagination a:hover,
+.pagination a:active{
+    color: whitesmoke;
+    background-color: #8020e0;
+}
