@@ -1,6 +1,9 @@
 // // const adminData  = require('./admin')
  
 // // const Cart = require('../models/cart');
+const PDFDocument=require('pdfkit')
+const fs=require('fs')
+const path=require('path')
 const Product=require('../models/productData');
 const user = require('../models/user');
 const User = require('../models/user');
@@ -9,6 +12,7 @@ const Order=require('../models/order');
 const order = require('../models/order');
 // // const CartItem=require('../models/cartItem')
 
+const ITEMS_PER_PAGE=2
 
 const getProducts=(req, res,next) => {
     Product.find()
@@ -39,12 +43,27 @@ const getProduct= (req,res,next)=>{
 
 
 const getIndex=(req,res,next)=>{
+    const page=+req.query.page ||1;
+    let totalItems;
     Product.find()
+    .countDocuments()
+    .then(numProducts=>{
+        totalItems=numProducts
+        return Product.find()
+                    .skip((page-1)*ITEMS_PER_PAGE)
+                    .limit(ITEMS_PER_PAGE)
+    })
     .then((products)=>{
         res.render('shop/index',{
             products:products,
             docTitle:'Shop',
-            hasProducts:products.length>0
+            hasProducts:products.length>0,
+            currentPage:page,
+            hasNextPage:ITEMS_PER_PAGE*page<totalItems,
+            hasPreviousPage:page>1,
+            nextPage:page+1,
+            previousPage:page-1,
+            lastPage:Math.ceil(totalItems/ITEMS_PER_PAGE)
             });
     })
     .catch(err=>console.log(err))
@@ -161,7 +180,7 @@ const getOrder=(req,res,next)=>{
             }
             // console.log(orders.products)
             const products=orders.products.map(productObj=>{
-                return {...productObj.product,quantity:productObj.quantity}
+                return {...productObj.product,quantity:productObj.quantity,orderId:orders._id}
             })
             res.render('shop/orders',{
                 docTitle:'Your Cart',
@@ -173,7 +192,58 @@ const getOrder=(req,res,next)=>{
     })
 }
 
+const getInvoice=(req,res,next)=>{
+    const orderId=req.params.orderId
+    Order.findById(orderId).then(order=>{
+        if(!order){
+            console.log('No order found')
+        }
+        if(order.user.userId.toString()!==req.user._id.toString()){//random user shouldn't access
+            console.log('No order fromt this user.')
+        }
+        const invoiceName=`invoice-${orderId}.pdf`
+        const invoicePath=path.join(path.dirname(process.mainModule.filename),'data','invoices',invoiceName)
 
+        const pdfDoc=new PDFDocument();
+        res.set('Content-Type','application/pdf') 
+        pdfDoc.pipe(fs.createWriteStream(invoicePath))
+        pdfDoc.pipe(res)
+
+        pdfDoc.fontSize(26).text('Invoice',{
+            underline:true
+        })
+        pdfDoc.fontSize(14).text('--------------------')
+        let totalPrice=0
+        order.products.forEach(prod=>{
+            totalPrice=+prod.quantity*prod.product.price
+            pdfDoc.text(
+                prod.product.title+
+                ' -->    '+
+                prod.quantity + 
+                ' *  ' + '$' +prod.product.price)
+        })
+        pdfDoc.fontSize(14).text('--------------------')
+        pdfDoc.text(`Total Price $${totalPrice}`)
+        pdfDoc.end( )
+        //reading file
+        // fs.readFile(path.join(path.dirname(process.mainModule.filename)
+        // ,'data'
+        // ,'invoices'
+        // ,invoiceName)
+        
+        // ,(err,data)=>{
+        //     if(err){console.log(err)}
+        //     res.set('Content-Type','application/pdf')
+        //     res.send(data)
+        // }
+        // )
+
+        //streaming of the data:
+        // const file=fs.createReadStream(invoicePath)
+        // res.set('Content-Type','application/pdf') 
+        // file.pipe(res)//file--> readable stream only send data; res-->writable stream only write to it;pipe would transfer
+    })
+}
 
 module.exports={
     getProducts,
@@ -184,7 +254,8 @@ module.exports={
     getCart,
     postCart,
     getOrder,
-    postOrder
+    postOrder,
+    getInvoice
 }
 
 //other way of getting cart
